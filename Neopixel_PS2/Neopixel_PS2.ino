@@ -18,6 +18,8 @@ byte type = 0;
 #define NUMPIXELS 12 // Hier wird die Anzahl der angeschlossenen WS2812 LEDs bzw. NeoPixel angegeben
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
+int pos = 0;
+
 void setup(){
  
   Serial.begin(57600);
@@ -64,14 +66,37 @@ void setup(){
 
 void loop(){
 
+  pixels.setPixelColor(pos, pixels.Color(0,0,0));
+
   ps2x.read_gamepad();
 
-  Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX  
-  Serial.print(",");
-  Serial.println(ps2x.Analog(PSS_LX), DEC); 
+  int x = ps2x.Analog(PSS_LY);
+  int y = ps2x.Analog(PSS_LX);
 
-  pixels.setPixelColor(1, pixels.Color(0,255,0)); // Pixel1 leuchtet in der Farbe Grün
-  pixels.show(); // Durchführen der Pixel-Ansteuerung
+  //pixels.setPixelColor(1, pixels.Color(0,255,0)); // Pixel1 leuchtet in der Farbe Grün
+  //pixels.show(); // Durchführen der Pixel-Ansteuerung
+
+  if(x > 140){
+
+    if(pos == 11){
+      pos = 0;  
+    }
+    else{
+      pos = pos + 1;    
+    } 
+  }
+  else if(x < 116){
+    if(pos == 0){
+      pos = 11;  
+    }  
+    else{
+      pos = pos - 1;  
+    }
+  }
+
+  pixels.setPixelColor(pos, pixels.Color(100,100,100));
+
+  pixels.show();
 
   delay(50);
     
