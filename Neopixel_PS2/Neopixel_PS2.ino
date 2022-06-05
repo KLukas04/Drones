@@ -160,7 +160,7 @@ void loop(){
   pixels.show();
 
   //Erschütterung
-  if(digitalRead(VIBRATION_PIN) == LOW){
+  if(digitalRead(VIBRATION_PIN) == HIGH){
       vibration = 100;
   }
   else{
