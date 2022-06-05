@@ -27,7 +27,7 @@ int brightness = 10;
 int old_brightness = 0;
 
 //Erschütterungssensor
-#define VIBRATION_PIN = 3
+#define VIBRATION_PIN  3
 
 void setup(){
  
