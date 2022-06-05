@@ -86,6 +86,21 @@ void setup(){
 
 void loop(){
 
+    if(vibration == 255){
+      vibration = 0;  
+    }
+    else{
+      vibration = vibration + 1;  
+    }
+  
+    ps2x.read_gamepad(false, vibration);
+
+    
+}
+
+/*
+void loop(){
+
   pixels.setPixelColor(pos, pixels.Color(0,0,0));
 
   ps2x.read_gamepad(false, vibration);
@@ -195,4 +210,4 @@ void setWhite(){
   red = brightness;
   green = brightness;
   blue = brightness;  
-}
+} */
