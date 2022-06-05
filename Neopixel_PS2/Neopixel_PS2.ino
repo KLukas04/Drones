@@ -133,7 +133,7 @@ void loop(){
     if(brightness != 0){
         old_brightness = brightness;
         brightness = 0;
-        updateColors();
+        resetColors();
     }
     else {
       brightness = old_brightness;
