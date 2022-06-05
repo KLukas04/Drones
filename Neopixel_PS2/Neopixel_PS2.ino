@@ -26,6 +26,9 @@ int blue = 10;
 int brightness = 10;
 int old_brightness = 0;
 
+//Erschütterungssensor
+#define VIBRATION_PIN = 3
+
 void setup(){
  
   Serial.begin(57600);
@@ -68,9 +71,14 @@ void setup(){
 
    //Neopixel
    pixels.begin();
+
+   //Erschütterungssensor
+   pinMode(VIBRATION_PIN, INPUT);
 }
 
 void loop(){
+
+  Serial.println(digitialRead(VIBRATION_PIN));  
 
   pixels.setPixelColor(pos, pixels.Color(0,0,0));
 
