@@ -9,6 +9,7 @@
 PS2X ps2x; // create PS2 Controller Class
 int error = 0;
 byte type = 0;
+byte vibration = 0;
 
 //Neopixel
 #include <Adafruit_NeoPixel.h>
@@ -29,7 +30,6 @@ int old_brightness = 0;
 
 //Erschütterung
 #define VIBRATION_PIN 2;
-byte vibration = 0;
 
 void setup(){
  
@@ -160,7 +160,7 @@ void loop(){
   pixels.show();
 
   //Erschütterung
-  if(digitalRead(VIBRATION_PIN) == HIGH){
+  if(digitalRead(VIBRATION_PIN) == LOW){
       vibration = 100;
   }
   else{
