@@ -14,17 +14,17 @@ byte type = 0;
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
-#define PIN 9 // Hier wird angegeben, an welchem digitalen Pin die WS2812 LEDs bzw. NeoPixel angeschlossen sind
-#define NUMPIXELS 40 // Hier wird die Anzahl der angeschlossenen WS2812 LEDs bzw. NeoPixel angegeben
+#define PIN 2 // Hier wird angegeben, an welchem digitalen Pin die WS2812 LEDs bzw. NeoPixel angeschlossen sind
+#define NUMPIXELS 12 // Hier wird die Anzahl der angeschlossenen WS2812 LEDs bzw. NeoPixel angegeben
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup(){
  
   Serial.begin(57600);
+
+  //ps2-Controller
   
   delay(300);  //added delay to give wireless ps2 module some time to startup, before configuring it
-   
-  //CHANGES for v1.6 HERE!!! **************PAY ATTENTION*************
   
   //setup pins and settings: GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
   error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
@@ -57,6 +57,9 @@ void setup(){
       Serial.print("Wireless Sony DualShock Controller found ");
       break;
    }
+
+   //Neopixel
+   pixels.begin();
 }
 
 void loop(){
@@ -66,6 +69,9 @@ void loop(){
   Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX  
   Serial.print(",");
   Serial.println(ps2x.Analog(PSS_LX), DEC); 
+
+  pixels.setPixelColor(1, pixels.Color(0,255,0)); // Pixel1 leuchtet in der Farbe Grün
+  pixels.show(); // Durchführen der Pixel-Ansteuerung
 
   delay(50);
     
