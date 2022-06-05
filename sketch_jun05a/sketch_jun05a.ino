@@ -1,17 +1,22 @@
+//PS2 Controller
 #include <PS2X_lib.h>  //for v1.6
 
-/******************************************************************
- * set pins connected to PS2 controller:
- *   - 1e column: original 
- *   - 2e colmun: Stef?
- * replace pin numbers by the ones you use
- ******************************************************************/
 #define PS2_DAT        13  //14    
 #define PS2_CMD        11  //15
 #define PS2_SEL        10  //16
 #define PS2_CLK        12  //17
 
 PS2X ps2x; // create PS2 Controller Class
+int error = 0;
+byte type = 0;
+//Neopixel
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+#define PIN 9 // Hier wird angegeben, an welchem digitalen Pin die WS2812 LEDs bzw. NeoPixel angeschlossen sind
+#define NUMPIXELS 40 // Hier wird die Anzahl der angeschlossenen WS2812 LEDs bzw. NeoPixel angegeben
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup(){
  
@@ -22,7 +27,7 @@ void setup(){
   //CHANGES for v1.6 HERE!!! **************PAY ATTENTION*************
   
   //setup pins and settings: GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
-  error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, pressures, rumble);
+  error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
   
   if(error == 0){
     Serial.print("Found Controller, configured successful ");
