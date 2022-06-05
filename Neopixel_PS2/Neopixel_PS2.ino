@@ -9,7 +9,8 @@
 PS2X ps2x; // create PS2 Controller Class
 int error = 0;
 byte type = 0;
-byte vibrate = 50;
+byte vibrate = 100;
+
 //Neopixel
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -45,7 +46,7 @@ void setup(){
   delay(300);  //added delay to give wireless ps2 module some time to startup, before configuring it
   
   //setup pins and settings: GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
-  error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
+  error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, true);
   
   if(error == 0){
     Serial.print("Found Controller, configured successful ");
@@ -165,16 +166,8 @@ void loop(){
 
   pixels.show();
 
-  VL53L0X_RangingMeasurementData_t measure;
-    
-  Serial.print("Reading a measurement... ");
-  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
-  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
-  } else {
-    Serial.println(" out of range ");
-  }
+  //Entfernung
 
   delay(200);
     
