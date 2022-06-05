@@ -70,107 +70,16 @@ void setup(){
    pixels.begin();
 }
 
-void loop(){
-
-  pixels.setPixelColor(pos, pixels.Color(0,0,0));
-
-  ps2x.read_gamepad();
-
-  int x = ps2x.Analog(PSS_LX);
-  int y = ps2x.Analog(PSS_LY);
-
-  //LED-Position ändern
-  if(x > 140){
-
-    if(pos == 11){
-      pos = 0;  
-    }
-    else{
-      pos = pos + 1;    
-    } 
-  }
-  else if(x < 116){
-    if(pos == 0){
-      pos = 11;  
-    }  
-    else{
-      pos = pos - 1;  
-    }
-  }
-
-  //LED-Farbe ändern
-  if(ps2x.Button(PSB_TRIANGLE)){
-    resetColors();
-    green = brightness;
-  }
-    
-  else if(ps2x.Button(PSB_CIRCLE)){
-    resetColors();
-    red = brightness;  
-  }
-    
-  else if(ps2x.Button(PSB_CROSS)){
-    resetColors();  
-    blue = brightness;
-  }
-
-  //LED-Helligkeit ändern
-  if(ps2x.Button(PSB_PAD_UP)){
-    if(brightness < 250){
-      brightness = brightness + 10;
-      updateColors();
-    }
-  }
-  else if(ps2x.Button(PSB_PAD_DOWN)){
-    if(brightness > 10){
-      brightness = brightness - 10;
-      updateColors();  
-    }
-  }  
-
-  //An- oder ausschalten
-  if(ps2x.Button(PSB_START)){
-    if(brightness != 0){
-        old_brightness = brightness;
-        brightness = 0;
-        resetColors();
-    }
-    else {
-      brightness = old_brightness;
-      setWhite();
-    }
-  }
-  
-  pixels.setPixelColor(pos, pixels.Color(red, green, blue));
-
-  pixels.show();
-
-  delay(200);
-    
-}
-
-void resetColors(){
-
-  red = 0;
-  green = 0;
-  blue = 0;
-    
-}
-
-void updateColors(){
-  if(red != 0){
-    red = brightness;  
-  }
-  else if(green != 0){
-    green = brightness;  
-  }
-  else if(blue != 0){
-    blue = brightness;    
-  }
-}
-
-void setWhite(){
-  red = brightness;
-  green = brightness;
-  blue = brightness;  
+void loop() {
+  pixels.setPixelColor(1, pixels.Color(255,255,255));
+  pixels.setPixelColor(2, pixels.Color(255,255,255));
+  pixels.setPixelColor(3, pixels.Color(255,255,255));
+  pixels.setPixelColor(4, pixels.Color(255,255,255));
+  pixels.setPixelColor(5, pixels.Color(255,255,255));
+  pixels.setPixelColor(6, pixels.Color(255,255,255));
+  pixels.setPixelColor(7, pixels.Color(255,255,255));
+  pixels.setPixelColor(8, pixels.Color(255,255,255));
+  pixels.setPixelColor(9, pixels.Color(255,255,255));
+  pixels.setPixelColor(10, pixels.Color(255,255,255));
+  pixels.setPixelColor(11, pixels.Color(255,255,255));
 }
