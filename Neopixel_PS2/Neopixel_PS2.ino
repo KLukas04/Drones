@@ -24,6 +24,7 @@ int green = 10;
 int blue = 10;
 
 int brightness = 10;
+int old_brightness = 0;
 
 void setup(){
  
@@ -115,13 +116,30 @@ void loop(){
 
   //LED-Helligkeit ändern
   if(ps2x.Button(PSB_PAD_UP)){
+    if(brightness < 250){
       brightness = brightness + 10;
       updateColors();
+    }
   }
   else if(ps2x.Button(PSB_PAD_DOWN)){
+    if(brightness > 10){
       brightness = brightness - 10;
-      updateColors();
+      updateColors();  
+    }
   }  
+
+  //An- oder ausschalten
+  if(ps2x.Button(PSB_START)){
+    if(brightness != 0){
+        old_brightness = brightness;
+        brightness = 0;
+        updateColors();
+    }
+    else {
+      brightness = old_brightness;
+      setWhite();
+    }
+  }
   
   pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
@@ -149,4 +167,10 @@ void updateColors(){
   else if(blue != 0){
     blue = brightness;    
   }
+}
+
+void setWhite(){
+  red = brightness;
+  green = brightness;
+  blue = brightness;  
 }
