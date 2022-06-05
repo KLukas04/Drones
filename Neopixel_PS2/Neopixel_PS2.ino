@@ -78,9 +78,7 @@ void loop(){
   int x = ps2x.Analog(PSS_LX);
   int y = ps2x.Analog(PSS_LY);
 
-  //pixels.setPixelColor(1, pixels.Color(0,255,0)); // Pixel1 leuchtet in der Farbe Grün
-  //pixels.show(); // Durchführen der Pixel-Ansteuerung
-
+  //LED-Position ändern
   if(x > 140){
 
     if(pos == 11){
@@ -99,20 +97,27 @@ void loop(){
     }
   }
 
+  //LED-Farbe ändern
   if(ps2x.Button(PSB_TRIANGLE)){
     resetColors();
     green = brightness;
   }
     
-  if(ps2x.Button(PSB_CIRCLE)){
+  else if(ps2x.Button(PSB_CIRCLE)){
     resetColors();
     red = brightness;  
   }
     
-  if(ps2x.Button(PSB_CROSS)){
+  else if(ps2x.Button(PSB_CROSS)){
     resetColors();  
     blue = brightness;
   }
+
+  //LED-Helligkeit ändern
+  if(ps2x.Button(PSB_PAD_UP)){
+      brightness = brightness + 10;
+      updateColors();
+  }   
   
   pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
@@ -128,4 +133,16 @@ void resetColors(){
   green = 0;
   blue = 0;
     
+}
+
+void updateColors(){
+  if(red != 0){
+    red = brightness;  
+  }
+  else if(green != 0){
+    green = brightness;  
+  }
+  else if(blue != 0){
+    blue = brightness;    
+  }
 }
