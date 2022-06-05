@@ -28,10 +28,6 @@ int blue = 10;
 int brightness = 10;
 int old_brightness = 0;
 
-//Entfernung
-#include "Adafruit_VL53L0X.h"
-Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-
 void setup(){
  
   Serial.begin(57600);
@@ -165,9 +161,6 @@ void loop(){
   pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
   pixels.show();
-
-
-  //Entfernung
 
   delay(200);
     
