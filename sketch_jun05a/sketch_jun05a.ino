@@ -53,3 +53,15 @@ void setup(){
       break;
    }
 }
+
+void loop(){
+
+  ps2x.read_gamepad();
+
+  Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX  
+  Serial.print(",");
+  Serial.println(ps2x.Analog(PSS_LX), DEC); 
+
+  delay(50);
+    
+}
