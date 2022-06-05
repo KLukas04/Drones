@@ -29,7 +29,7 @@ int brightness = 10;
 int old_brightness = 0;
 
 //Erschütterung
-#define VIBRATION_PIN 2;
+#define VIBRATION_PIN 3
 
 void setup(){
  
