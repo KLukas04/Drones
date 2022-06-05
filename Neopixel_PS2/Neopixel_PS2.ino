@@ -70,8 +70,8 @@ void loop(){
 
   ps2x.read_gamepad();
 
-  int x = ps2x.Analog(PSS_LY);
-  int y = ps2x.Analog(PSS_LX);
+  int x = ps2x.Analog(PSS_LX);
+  int y = ps2x.Analog(PSS_LY);
 
   //pixels.setPixelColor(1, pixels.Color(0,255,0)); // Pixel1 leuchtet in der Farbe Grün
   //pixels.show(); // Durchführen der Pixel-Ansteuerung
