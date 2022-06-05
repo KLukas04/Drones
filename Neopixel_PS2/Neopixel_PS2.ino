@@ -9,6 +9,7 @@
 PS2X ps2x; // create PS2 Controller Class
 int error = 0;
 byte type = 0;
+byte vibrate = 50;
 //Neopixel
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -28,7 +29,7 @@ int old_brightness = 0;
 
 //Entfernung
 #include "Adafruit_VL53L0X.h"
-
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 void setup(){
  
@@ -93,7 +94,7 @@ void loop(){
 
   pixels.setPixelColor(pos, pixels.Color(0,0,0));
 
-  ps2x.read_gamepad();
+  ps2x.read_gamepad(false, vibrate);
 
   int x = ps2x.Analog(PSS_LX);
   int y = ps2x.Analog(PSS_LY);
