@@ -19,6 +19,7 @@ byte type = 0;
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int pos = 0;
+int color = pixels.Color(10, 10, 10);
 
 void setup(){
  
@@ -94,7 +95,7 @@ void loop(){
     }
   }
 
-  pixels.setPixelColor(pos, pixels.Color(100,100,100));
+  pixels.setPixelColor(pos, color);
 
   pixels.show();
 
