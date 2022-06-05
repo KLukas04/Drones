@@ -9,7 +9,6 @@
 PS2X ps2x; // create PS2 Controller Class
 int error = 0;
 byte type = 0;
-byte vibrate = 100;
 
 //Neopixel
 #include <Adafruit_NeoPixel.h>
@@ -27,6 +26,10 @@ int blue = 10;
 
 int brightness = 10;
 int old_brightness = 0;
+
+//Erschütterung
+#define VIBRATION_PIN 2;
+byte vibration = 0;
 
 void setup(){
  
@@ -76,13 +79,16 @@ void setup(){
   //Neopixel
   pixels.begin();
 
+  //Erschütterung
+  pinMode(VIBRATION_PIN, INPUT);
+
 }
 
 void loop(){
 
   pixels.setPixelColor(pos, pixels.Color(0,0,0));
 
-  ps2x.read_gamepad(false, vibrate);
+  ps2x.read_gamepad(false, vibration);
 
   int x = ps2x.Analog(PSS_LX);
   int y = ps2x.Analog(PSS_LY);
@@ -152,6 +158,14 @@ void loop(){
   pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
   pixels.show();
+
+  //Erschütterung
+  if(digitalRead(VIBRATION_PIN) == HIGH){
+      vibration = 100;
+  }
+  else{
+    vibration = 0;  
+  }
 
   delay(200);
     
