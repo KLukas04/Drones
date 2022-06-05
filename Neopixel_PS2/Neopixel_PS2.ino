@@ -76,15 +76,6 @@ void setup(){
   //Neopixel
   pixels.begin();
 
-  //Entfernung
-  Serial.println("Adafruit VL53L0X test");
-  if (!lox.begin()) {
-    Serial.println(F("Failed to boot VL53L0X"));
-    while(1);
-  }
-  // power 
-  Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
-
 }
 
 void loop(){
