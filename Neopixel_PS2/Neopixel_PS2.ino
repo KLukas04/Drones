@@ -78,7 +78,7 @@ void setup(){
 
 void loop(){
 
-  Serial.println(digitialRead(VIBRATION_PIN));  
+  Serial.println(digitalRead(VIBRATION_PIN));  
 
   pixels.setPixelColor(pos, pixels.Color(0,0,0));
 
