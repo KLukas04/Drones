@@ -117,7 +117,11 @@ void loop(){
   if(ps2x.Button(PSB_PAD_UP)){
       brightness = brightness + 10;
       updateColors();
-  }   
+  }
+  else if(ps2x.Button(PSB_PAD_DOWN)){
+      brightness = brightness - 10;
+      updateColors();
+  }  
   
   pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
