@@ -26,12 +26,18 @@ int blue = 10;
 int brightness = 10;
 int old_brightness = 0;
 
-//Erschütterungssensor
-#define VIBRATION_PIN  3
+//Entfernung
+#include "Adafruit_VL53L0X.h"
+
 
 void setup(){
  
   Serial.begin(57600);
+
+  // wait until serial port opens for native USB devices
+  while (! Serial) {
+    delay(1);
+  }
 
   //ps2-Controller
   
@@ -69,16 +75,21 @@ void setup(){
       break;
    }
 
-   //Neopixel
-   pixels.begin();
+  //Neopixel
+  pixels.begin();
 
-   //Erschütterungssensor
-   pinMode(VIBRATION_PIN, INPUT);
+  //Entfernung
+  Serial.println("Adafruit VL53L0X test");
+  if (!lox.begin()) {
+    Serial.println(F("Failed to boot VL53L0X"));
+    while(1);
+  }
+  // power 
+  Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
+
 }
 
 void loop(){
-
-  Serial.println(digitalRead(VIBRATION_PIN));  
 
   pixels.setPixelColor(pos, pixels.Color(0,0,0));
 
@@ -152,6 +163,17 @@ void loop(){
   pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
   pixels.show();
+
+  VL53L0X_RangingMeasurementData_t measure;
+    
+  Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+
+  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
+  } else {
+    Serial.println(" out of range ");
+  }
 
   delay(200);
     
