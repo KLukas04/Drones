@@ -19,7 +19,11 @@ byte type = 0;
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int pos = 0;
-int color = pixels.Color(10, 10, 10);
+int red = 10;
+int green = 10;
+int blue = 10;
+
+int brightness = 10;
 
 void setup(){
  
@@ -95,10 +99,33 @@ void loop(){
     }
   }
 
-  pixels.setPixelColor(pos, color);
+  if(ps2x.Button(PSB_TRIANGLE)){
+    resetColors();
+    green = brightness;
+  }
+    
+  if(ps2x.Button(PSB_CIRCLE)){
+    resetColors();
+    red = brightness;  
+  }
+    
+  if(ps2x.Button(PSB_CROSS)){
+    resetColors();  
+    blue = brightness;
+  }
+  
+  pixels.setPixelColor(pos, pixels.Color(red, green, blue));
 
   pixels.show();
 
-  delay(50);
+  delay(200);
+    
+}
+
+void resetColors(){
+
+  red = 0;
+  green = 0;
+  blue = 0;
     
 }
