@@ -1,3 +1,13 @@
+/*-------------------------------------*/
+/*
+Erschütterungssensor
+  DO: 3
+
+Neopixel
+  IN: 2
+*/
+/*-------------------------------------*/
+
 //PS2 Controller
 #include <PS2X_lib.h>  //for v1.6
 
