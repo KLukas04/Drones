@@ -1,6 +1,5 @@
 #include <Servo.h> //Hinzufügen der Servobibliothek. Diese Bibliothek wird verwendet, da ein ESC aus elektrischer Sicht in gleicher Weise wie ein Servo angesteuert wird.
 Servo ESC;     // Der ESC-Controller (Electronic Speed Controller bzw. elektronischer Fahrtregler) wird als Objekt mit dem Namen "ESC" festgelegt.
-int Geschwindigkeit; // Das Wort "Geschwindigkeit" steht als Variable für den Ansteuerungswert am ESC.
 
 void setup() 
 {
@@ -9,5 +8,5 @@ void setup()
 }
 void loop() 
 {
-  ESC.write(Geschwindigkeit);    // Der endgültige Wert für den ESC wird an den ESC gesendet. Der ESC nimmt das Signal an dieser Stelle auf und steuert den Motor entsprechend der gesendeten Werte an.
+  ESC.write(100);    // Der endgültige Wert für den ESC wird an den ESC gesendet. Der ESC nimmt das Signal an dieser Stelle auf und steuert den Motor entsprechend der gesendeten Werte an.
 }
