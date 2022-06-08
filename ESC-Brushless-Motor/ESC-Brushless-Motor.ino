@@ -10,6 +10,9 @@ int val = -1;
 
 void setup() 
 {
+
+  Serial.begin(9600);
+  
   // Der ESC wird im Setup genauer definiert.
   ESC1.attach(8); // Die drei Werte bedeuten Pin, minimale Pulsweite und maximale Pulsweite in Mikrosekunden. 1000 und 2000 sind dabei Standartwerte, die sich fpr die meisten Speedcontroller eignen. Wenn es mit diesen Werten nicht funktioniert, müssen die Werte des verwendeten ESC recherchiert und eingesetzt werden.
 }
