@@ -88,7 +88,7 @@ void loop() {
       
   }
   //Hier Motor anschließen, Stufe 2
-  if(ps2x.Button(PSB_L2) || ps2x.Button(PSB_CIRCLE)){
+  if(ps2x.Button(PSB_R1) || ps2x.Button(PSB_CIRCLE)){
     //Serial.println("L2 or Circle");
     Serial.println("Sending 0 throttle");
     setAllZero();
@@ -121,7 +121,7 @@ void loop() {
 
   int y = ps2x.Analog(PSS_LY);
 
-  Serial.println(y);
+  //Serial.println(y);
 
   if(y > 140){
     if(mSpeed < MAX_SPEED){
@@ -131,7 +131,11 @@ void loop() {
   else if(y < 116){
     mSpeed = mSpeed - 1;  
   }
-  
+
+  motA.write(mSpeed);
+  motB.write(mSpeed);
+  motC.write(mSpeed);
+  motD.write(mSpeed);
 }
 
 void setAllZero(){
