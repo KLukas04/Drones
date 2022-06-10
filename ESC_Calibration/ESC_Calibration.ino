@@ -87,6 +87,8 @@ void test()
     motB.write(0);
     motC.write(0);
     motD.write(0);
+
+    delay(50);
 }
 
 /**
