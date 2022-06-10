@@ -6,10 +6,12 @@
 #define PS2_SEL        10  //16
 #define PS2_CLK        12  //17
 byte error = 0;
+byte type = 0;
 
 PS2X ps2x; // create PS2 Controller Class
 
 int motorSpeed = 0;
+byte vibration = 0;
 
 void setup() {
   Serial.begin(57600);
@@ -58,6 +60,11 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+
+  //ESC-Calibration
+  
+  ps2x.read_gamepad(false, vibration);
+
+  int y = ps2x.Analog(PSS_LY);
 
 }
