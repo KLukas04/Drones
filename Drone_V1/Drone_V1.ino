@@ -85,7 +85,6 @@ void loop() {
       motB.write(180);
       motC.write(180);
       motD.write(180);
-      isCalibrated = true;
       
   }
   //Hier Motor anschließen, Stufe 2
@@ -93,6 +92,7 @@ void loop() {
     //Serial.println("L2 or Circle");
     Serial.println("Sending 0 throttle");
     setAllZero();
+    isCalibrated = true;
   }
   //Stufe 3
   if(ps2x.Button(PSB_TRIANGLE)){
@@ -132,12 +132,13 @@ void loop() {
   else if(y < 116){
     mSpeed = mSpeed - 1;  
   }
-
-  motA.write(mSpeed);
-  motB.write(mSpeed);
-  motC.write(mSpeed);
-  motD.write(mSpeed);
-
+  if(isCalibrated){
+    motA.write(mSpeed);
+    motB.write(mSpeed);
+    motC.write(mSpeed);
+    motD.write(mSpeed);  
+  }
+ 
   delay(50);
 }
 
