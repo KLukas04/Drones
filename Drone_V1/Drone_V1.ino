@@ -78,21 +78,26 @@ void loop() {
   //ESC-Calibration
   //Stufe 1
   if(!isCalibrated && ps2x.Button(PSB_L1)){
+    Serial.println("L1");
       Serial.println("Sending 180 throttle");
+      /*
       motA.write(180);
       motB.write(180);
       motC.write(180);
       motD.write(180);
       isCalibrated = true;
+      */
   }
   //Hier Motor anschließen, Stufe 2
   if(ps2x.Button(PSB_L2) || ps2x.Button(PSB_CIRCLE)){
+    Serial.println("L2 or Circle");
     Serial.println("Sending 0 throttle");
-    setAllZero();
+    //setAllZero();
   }
   //Stufe 3
   if(ps2x.Button(PSB_TRIANGLE)){
-    
+    Serial.println("Triangle");
+    /*
     setAllZero();
 
     for(int i = 0; i < 21; i++){
@@ -111,11 +116,13 @@ void loop() {
     }
 
     setAllZero();
-    
+    */
   }
   
 
   int y = ps2x.Analog(PSS_LY);
+
+  Serial.println(y);
 
   if(y > 140){
     if(mSpeed < MAX_SPEED){
