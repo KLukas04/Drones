@@ -96,6 +96,7 @@ void loop() {
     isCalibrated = true;
   }
   //Stufe 3
+  /*
   if(ps2x.Button(PSB_TRIANGLE)){
     //Serial.println("Triangle");
     
@@ -119,7 +120,7 @@ void loop() {
     setAllZero();
     
   }
-  
+  */
 
   int y = ps2x.Analog(PSS_LY);
 
@@ -140,7 +141,7 @@ void loop() {
     motD.write(mSpeed);  
   }
  
-  delay(50);
+  delay(10);
 }
 
 void setAllZero(){
