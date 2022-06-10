@@ -17,6 +17,7 @@ byte vibration = 0;
 Servo motA, motB, motC, motD;
 int mSpeed = 0;
 #define MAX_SPEED 60
+bool isCalibrated = false;
 
 void setup() {
   Serial.begin(57600);
@@ -76,12 +77,13 @@ void loop() {
 
   //ESC-Calibration
   //Stufe 1
-  if(ps2x.Button(PSB_L1)){
+  if(!isCalibrated && ps2x.Button(PSB_L1)){
       Serial.println("Sending 180 throttle");
       motA.write(180);
       motB.write(180);
       motC.write(180);
       motD.write(180);
+      isCalibrated = true;
   }
   //Hier Motor anschließen, Stufe 2
   if(ps2x.Button(PSB_L2) || ps2x.Button(PSB_CIRCLE)){
