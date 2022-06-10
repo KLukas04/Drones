@@ -18,6 +18,7 @@ Servo motA, motB, motC, motD;
 int mSpeed = 0;
 #define MAX_SPEED 60
 bool isCalibrated = false;
+bool runLoopOnce = false;
 
 void setup() {
   Serial.begin(57600);
@@ -136,6 +137,8 @@ void loop() {
   motB.write(mSpeed);
   motC.write(mSpeed);
   motD.write(mSpeed);
+
+  delay(50);
 }
 
 void setAllZero(){
