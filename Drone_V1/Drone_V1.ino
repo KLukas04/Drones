@@ -92,6 +92,7 @@ void loop() {
     //Serial.println("L2 or Circle");
     Serial.println("Sending 0 throttle");
     setAllZero();
+    mSpeed = 0;
     isCalibrated = true;
   }
   //Stufe 3
@@ -107,7 +108,7 @@ void loop() {
         motD.write(i);
         delay(200);
     }
-    for(int i = 21; i > 0 ; i++){
+    for(int i = 21; i > 0 ; i--){
         motA.write(i);
         motB.write(i);
         motC.write(i);
@@ -124,12 +125,12 @@ void loop() {
 
   //Serial.println(y);
 
-  if(y > 140){
+  if(y < 116){
     if(mSpeed < MAX_SPEED){
       mSpeed = mSpeed + 1;  
     }  
   }
-  else if(y < 116){
+  else if(y > 140){
     mSpeed = mSpeed - 1;  
   }
   if(isCalibrated){
