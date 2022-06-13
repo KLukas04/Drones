@@ -19,6 +19,8 @@ int fLeftS = 0;
 int fRightS = 0;
 int bLeftS = 0;
 int bRightS = 0;
+bool isCalibrated = false;
+bool runLoopOnce = false;
 
 void setup() {
   Serial.begin(57600);
@@ -69,9 +71,79 @@ void setup() {
   fRightM.attach(5, 1000, 2000);
   bLeftM.attach(6, 1000, 2000);
   bRightM.attach(7, 1000, 2000);
+  Serial.println("Attached ESCs");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
+  ps2x.read_gamepad(false, vibration);
 
+  //ESC-Calibration
+  //Stufe 1
+  if(!isCalibrated && ps2x.Button(PSB_L1)){
+      Serial.println("Sending 180 throttle");
+      setAllFull();
+  }
+  //Hier Motor anschließen, Stufe 2
+  if(ps2x.Button(PSB_R1) || ps2x.Button(PSB_CIRCLE)){
+    Serial.println("Sending 0 throttle");
+    setAllZero();
+    isCalibrated = true;
+  }
+
+  int y = ps2x.Analog(PSS_LY);
+
+  //adjusting speed based on values
+  if(y < 116){
+    if(fLeftS < MAX_SPEED){
+      fLeftS += 1;  
+    }
+    if(fRightS < MAX_SPEED){
+      fRightS += 1;  
+    }
+    if(bLeftS < MAX_SPEED){
+      bLeftS += 1;  
+    }
+    if(bRightS < MAX_SPEED){
+      bRightS += 1;  
+    }
+  }
+  else if(y > 140){
+    if(fLeftS > 0){
+      fLeftS -= 1;  
+    }
+    if(fRightS > 0){
+      fRightS -= 1;  
+    }
+    if(bLeftS > 0){
+      bLeftS -= 1;  
+    }
+    if(bRightS > 0){
+      bRightS -= 1;  
+    }
+  }
+
+  //Only change motor values if calibration is finihed
+  if(isCalibrated){
+    fLeftM.write(fLeftS);
+    fRightM.write(fRightS);
+    bLeftM.write(bLeftS);
+    bRightM.write(bRightS);
+  }
+ 
+  delay(10);
+}
+
+void setAllZero(){
+  fLeftM.write(0);
+  fRightM.write(0);
+  bLeftM.write(0);
+  bRightM.write(0);
+}
+
+void setAllFull(){
+  fLeftM.write(180);
+  fRightM.write(180);
+  bLeftM.write(180);
+  bRightM.write(180);
 }
