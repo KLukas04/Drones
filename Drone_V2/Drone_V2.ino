@@ -13,7 +13,7 @@ byte vibration = 0;
 
 //ESC
 #include <Servo.h>
-#define MAX_SPEED 100
+#define MAX_SPEED 180
 Servo fLeftM, fRightM, bLeftM, bRightM;
 int fLeftS = 0;
 int fRightS = 0;
@@ -72,6 +72,8 @@ void setup() {
   bLeftM.attach(6, 1000, 2000);
   bRightM.attach(7, 1000, 2000);
   Serial.println("Attached ESCs");
+
+  setAllFull();
 }
 
 void loop() {
@@ -139,6 +141,11 @@ void setAllZero(){
   fRightM.write(0);
   bLeftM.write(0);
   bRightM.write(0);
+
+  fLeftS = 0;
+  fRightS = 0;
+  bLeftS = 0;
+  bRightS = 0;
 }
 
 void setAllFull(){
