@@ -4,6 +4,8 @@
 
 Servo right_prop;
 Servo left_prop;
+Servo left_back_prop;
+Servo right_back_prop;
 
 /*MPU-6050 gives you 16 bits data so you have to create some 16int constants
  * to store the data for accelerations and gyro*/
@@ -50,6 +52,8 @@ void setup() {
   Serial.begin(250000);
   right_prop.attach(4, 1000, 2000); //attach the right motor to pin 4
   left_prop.attach(5, 1000, 2000);  //attach the left motor to pin 5
+  left_back_prop.attach(7, 1000, 2000); //attach the right motor to pin 4
+  right_back_prop.attach(6, 1000, 2000); //attach the right motor to pin 4
 
   time = millis(); //Start counting time in milliseconds
   /*In order to start up the ESCs we have to send a min value
@@ -59,11 +63,15 @@ void setup() {
   Serial.println("Sending 2000 throttle"); 
   left_prop.writeMicroseconds(2000); 
   right_prop.writeMicroseconds(2000);
+  left_back_prop.writeMicroseconds(2000);
+  right_back_prop.writeMicroseconds(2000);
   delay(10000); /*Give some delay, 7s, to have time to connect
                 *the propellers and let everything start up*/
   Serial.println("Sending 1000 throttle");
   left_prop.writeMicroseconds(1000); 
   right_prop.writeMicroseconds(1000);
+  left_back_prop.writeMicroseconds(1000);
+  right_back_prop.writeMicroseconds(1000);
   delay(10000);
   Serial.println("Finish Calibration");
   delay(2000);
@@ -76,7 +84,7 @@ void loop() {
     time = millis();  // actual time read
     elapsedTime = (time - timePrev) / 1000; 
   
-  /*The tiemStep is the time that elapsed since the previous loop. 
+  /*The timeStamp is the time that elapsed since the previous loop. 
    * This is the value that we will use in the formulas as "elapsedTime" 
    * in seconds. We work in ms so we haveto divide the value by 1000 
    to obtain seconds*/
@@ -154,7 +162,7 @@ void loop() {
    
    /*Now we have our angles in degree and values from -10º0 to 100º aprox*/
    //Serial.print("ANGLE: ");
-   //Serial.print(Total_angle[0] + 4);
+   //Serial.println(Total_angle[0] + 4);
 
    
   
@@ -245,6 +253,10 @@ width for each pulse*/
 
 left_prop.writeMicroseconds(pwmLeft);
 right_prop.writeMicroseconds(pwmRight);
+left_back_prop.writeMicroseconds(pwmLeft);
+right_back_prop.writeMicroseconds(pwmRight);
 previous_error = error; //Remember to store the previous error.
+
+//delay(50);
 
 }//end of loop void
