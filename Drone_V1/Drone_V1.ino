@@ -126,11 +126,11 @@ void loop() {
 
   if(y < 116){
     if(mSpeed < MAX_SPEED){
-      mSpeed = mSpeed + 1;  
+      mSpeed = mSpeed + 3;  
     }  
   }
   else if(y > 140){
-    mSpeed = mSpeed - 1;  
+    mSpeed = mSpeed - 3;  
   }
   if(isCalibrated){
     motA.write(mSpeed);
