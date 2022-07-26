@@ -176,7 +176,7 @@ void loop() {
    /*---Y axis angle---*/
    Total_angle[1] = 0.98 *(Total_angle[1] + Gyro_angle[1]*elapsedTime) + 0.02*Acceleration_angle[1];  
 
-   Serial.println(Total_angle[0]);
+   //Serial.println(Total_angle[0]);
 
   /*///////////////////////////P I D///////////////////////////////////*/
 /*Remember that for the balance we will use just one axis. I've choose the x angle
@@ -251,6 +251,11 @@ pwmFrontLeft = throttle + PID[0];
 pwmBackLeft = throttle + PID[0];
 pwmFrontRight = throttle - PID[0];
 pwmBackRight = throttle - PID[0];
+
+pwmFrontLeft = throttle + PID[1];
+pwmFrontRight = throttle + PID[1];
+pwmBackLeft = throttle - PID[1];
+pwmBackRight = throttle - PID[1];
 
 /*Once again we map the PWM values to be sure that we won't pass the min
 and max values. Yes, we've already mapped the PID values. But for example, for 
