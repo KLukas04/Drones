@@ -24,10 +24,14 @@ float elapsedTime, time, timePrev;
 int i;
 float rad_to_deg = 180/3.141592654;
 
-float PID, pwmLeft, pwmRight, error, previous_error;
-float pid_p=0;
-float pid_i=0;
-float pid_d=0;
+float PID[2];
+float error[2];
+float previous_error[2];
+
+float pwmFrontLeft, pwmBackLeft, pwmFrontRight, pwmBackRight;
+float pid_p[2] = {0, 0};
+float pid_i[2] = {0, 0};
+float pid_d[2] = {0, 0};
 /////////////////PID CONSTANTS/////////////////
 double kp=10;//3.55
 double ki=0.0;//0.003
@@ -35,11 +39,12 @@ double kd=0.0;//2.05
 ///////////////////////////////////////////////
 
 double throttle=1200; //initial value of throttle to the motors
-float desired_angle = 0; //This is the angle in which we whant the
+float desired_angle[2] = {0, 0}; //This is the angle in which we whant the
                          //balance to stay steady
 
 
 void setup() {
+  
   //Power for the Gyro
 
   Serial.begin(57600);
@@ -180,12 +185,14 @@ the balance*/
 
 /*First calculate the error between the desired angle and 
 *the real measured angle*/
-error = Total_angle[0] + 4 - desired_angle;
+error[0] = Total_angle[0] + 4 - desired_angle[0];
+error[1] = Total_angle[1] + 4 - desired_angle[1];
     
 /*Next the proportional value of the PID is just a proportional constant
 *multiplied by the error*/
 
-pid_p = kp*error;
+pid_p[0] = kp*error[0];
+pid_p[1] = kp*error[1];
 
 /*The integral part should only act if we are close to the
 desired position but we want to fine tune the error. That's
@@ -193,9 +200,13 @@ why I've made a if operation for an error between -2 and 2 degree.
 To integrate we just sum the previous integral value with the
 error multiplied by  the integral constant. This will integrate (increase)
 the value each loop till we reach the 0 point*/
-if(-3 <error <3)
+if(-3 < error[0] <3)
 {
-  pid_i = pid_i+(ki*error);  
+  pid_i[0] = pid_i[0]+(ki*error[0]);  
+}
+if(-3 < error[1] <3)
+{
+  pid_i[1] = pid_i[1]+(ki*error[1]);  
 }
 
 /*The last part is the derivate. The derivate acts upon the speed of the error.
@@ -204,53 +215,84 @@ time divided by that time. For that we will use a variable called previous_error
 We substract that value from the actual error and divide all by the elapsed time. 
 Finnaly we multiply the result by the derivate constant*/
 
-pid_d = kd*((error - previous_error)/elapsedTime);
+pid_d[0] = kd*((error[0] - previous_error[0])/elapsedTime);
+pid_d[1] = kd*((error[1] - previous_error[1])/elapsedTime);
 
 /*The final PID values is the sum of each of this 3 parts*/
-PID = pid_p + pid_i + pid_d;
+PID[0] = pid_p[0] + pid_i[0] + pid_d[0];
+PID[1] = pid_p[1] + pid_i[1] + pid_d[1];
 
 /*We know that the min value of PWM signal is 1000us and the max is 2000. So that
 tells us that the PID value can/s oscilate more than -1000 and 1000 because when we
 have a value of 2000us the maximum value taht we could sybstract is 1000 and when
 we have a value of 1000us for the PWM sihnal, the maximum value that we could add is 1000
 to reach the maximum 2000us*/
-if(PID < -1000)
+if(PID[0] < -1000)
 {
-  PID=-1000;
+  PID[0] =-1000;
 }
-if(PID > 1000)
+if(PID[0] > 1000)
 {
-  PID=1000;
+  PID[0] =1000;
+}
+if(PID[1] < -1000)
+{
+  PID[1] =-1000;
+}
+if(PID[1] > 1000)
+{
+  PID[1] =1000;
 }
 
 /*Finally we calculate the PWM width. We sum the desired throttle and the PID value*/
-pwmLeft = throttle + PID;
-pwmRight = throttle - PID;
-
+//pwmLeft = throttle + PID;
+//pwmRight = throttle - PID;
+pwmFrontLeft = throttle + PID[0];
+pwmBackLeft = throttle + PID[0];
+pwmFrontRight = throttle - PID[0];
+pwmBackRight = throttle - PID[0];
 
 /*Once again we map the PWM values to be sure that we won't pass the min
 and max values. Yes, we've already mapped the PID values. But for example, for 
 throttle value of 1300, if we sum the max PID value we would have 2300us and
 that will mess up the ESC.*/
-//Right
-if(pwmRight < 1000)
+//pwmFrontRight
+if(pwmFrontRight < 1000)
 {
-  pwmRight= 1100;
+  pwmFrontRight= 1100;
 }
-if(pwmRight > 2000)
+if(pwmFrontRight > 2000)
 {
-  pwmRight=2000; 
+  pwmFrontRight=2000; 
 }
-//Left
-if(pwmLeft < 1000)
+//pwmFrontLeft
+if(pwmFrontLeft < 1000)
 {
-  pwmLeft= 1100;
+  pwmFrontLeft= 1100;
 }
-if(pwmLeft > 2000)
+if(pwmFrontLeft > 2000)
 {
-  pwmLeft=2000;
+  pwmFrontLeft=2000;
 }
 
+//pwmBackRight
+if(pwmBackRight < 1000)
+{
+  pwmBackRight= 1100;
+}
+if(pwmBackRight > 2000)
+{
+  pwmBackRight=2000; 
+}
+//pwmBackLeft
+if(pwmBackLeft < 1000)
+{
+  pwmBackLeft= 1100;
+}
+if(pwmBackLeft > 2000)
+{
+  pwmBackLeft=2000;
+}
 /*Finally using the servo function we create the PWM pulses with the calculated
 width for each pulse*/
 //Serial.print(" --- LEFT:");
@@ -258,11 +300,12 @@ width for each pulse*/
 //Serial.print(" --- RIGHT: ");
 //Serial.println(pwmRight);
 
-left_prop.writeMicroseconds(pwmLeft);
-right_prop.writeMicroseconds(pwmRight);
-left_back_prop.writeMicroseconds(pwmLeft);
-right_back_prop.writeMicroseconds(pwmRight);
-previous_error = error; //Remember to store the previous error.
+left_prop.writeMicroseconds(pwmFrontLeft);
+right_prop.writeMicroseconds(pwmFrontRight);
+left_back_prop.writeMicroseconds(pwmBackLeft);
+right_back_prop.writeMicroseconds(pwmBackRight);
+previous_error[0] = error[0];
+previous_error[1] = error[1];
 
 delay(10);
 
