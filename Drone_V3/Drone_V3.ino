@@ -33,9 +33,9 @@ float pid_p[2] = {0, 0};
 float pid_i[2] = {0, 0};
 float pid_d[2] = {0, 0};
 /////////////////PID CONSTANTS/////////////////
-double kp=10;//3.55
-double ki=0.0;//0.003
-double kd=0.0;//2.05
+double kp=2.5;//3.55
+double ki=0.02;//0.003
+double kd=5.0;//2.05
 ///////////////////////////////////////////////
 
 double throttle=1200; //initial value of throttle to the motors
@@ -312,6 +312,6 @@ right_back_prop.writeMicroseconds(pwmBackRight);
 previous_error[0] = error[0];
 previous_error[1] = error[1];
 
-delay(10);
+delay(50);
 
 }
