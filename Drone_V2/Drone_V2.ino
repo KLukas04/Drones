@@ -66,7 +66,7 @@ void setup() {
   //Serial.println("Pitch:");                                                 //Print text to screen                                                //Set the LCD cursor to position to position 0,1
   //Serial.println("Roll :");                                                 //Print text to screen
 
-  Serial.println("Finish Calibration");
+  Serial.println("Finish Gyro Calibration");
   
   //ps2-Controller
   

@@ -40,8 +40,17 @@ float desired_angle = 0; //This is the angle in which we whant the
 
 
 void setup() {
+  //Power for the Gyro
 
-  pinMode(53, OUTPUT);
+  Serial.begin(57600);
+
+  // wait until serial port opens for native USB devices
+  while (! Serial) {
+    delay(1);
+  }
+  
+  //Gyro
+  pinMode(53, OUTPUT); 
   digitalWrite(53, HIGH);
   
   Wire.begin(); //begin the wire comunication
@@ -50,6 +59,8 @@ void setup() {
   Wire.write(0);
   Wire.endTransmission(true);
   Serial.begin(250000);
+
+  //ESC and Motors
   right_prop.attach(4, 1000, 2000); //attach the right motor to pin 4
   left_prop.attach(5, 1000, 2000);  //attach the left motor to pin 5
   left_back_prop.attach(7, 1000, 2000); //attach the right motor to pin 4
@@ -74,8 +85,8 @@ void setup() {
   right_back_prop.writeMicroseconds(1000);
   delay(10000);
   Serial.println("Finish Calibration");
-  delay(2000);
-}//end of setup void
+
+}
 
 void loop() {
 
@@ -158,15 +169,11 @@ void loop() {
    /*---X axis angle---*/
    Total_angle[0] = 0.98 *(Total_angle[0] + Gyro_angle[0]*elapsedTime) + 0.02*Acceleration_angle[0];
    /*---Y axis angle---*/
-   Total_angle[1] = 0.98 *(Total_angle[1] + Gyro_angle[1]*elapsedTime) + 0.02*Acceleration_angle[1];
-   
-   /*Now we have our angles in degree and values from -10º0 to 100º aprox*/
-   //Serial.print("ANGLE: ");
+   Total_angle[1] = 0.98 *(Total_angle[1] + Gyro_angle[1]*elapsedTime) + 0.02*Acceleration_angle[1];  
+
    Serial.println(Total_angle[0]);
 
-   
-  
-/*///////////////////////////P I D///////////////////////////////////*/
+  /*///////////////////////////P I D///////////////////////////////////*/
 /*Remember that for the balance we will use just one axis. I've choose the x angle
 to implement the PID with. That means that the x axis of the IMU has to be paralel to
 the balance*/
@@ -259,4 +266,4 @@ previous_error = error; //Remember to store the previous error.
 
 delay(10);
 
-}//end of loop void
+}
