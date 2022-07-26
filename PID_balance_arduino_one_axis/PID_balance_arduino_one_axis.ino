@@ -27,9 +27,9 @@ float pid_p=0;
 float pid_i=0;
 float pid_d=0;
 /////////////////PID CONSTANTS/////////////////
-double kp=3.55;//3.55
-double ki=0.005;//0.003
-double kd=2.05;//2.05
+double kp=10;//3.55
+double ki=0.0;//0.003
+double kd=0.0;//2.05
 ///////////////////////////////////////////////
 
 double throttle=1200; //initial value of throttle to the motors
@@ -48,7 +48,7 @@ void setup() {
   Wire.write(0);
   Wire.endTransmission(true);
   Serial.begin(250000);
-  right_prop.attach(3, 1000, 2000); //attach the right motor to pin 3
+  right_prop.attach(4, 1000, 2000); //attach the right motor to pin 4
   left_prop.attach(5, 1000, 2000);  //attach the left motor to pin 5
 
   time = millis(); //Start counting time in milliseconds
@@ -56,10 +56,17 @@ void setup() {
    * of PWM to them before connecting the battery. Otherwise
    * the ESCs won't start up or enter in the configure mode.
    * The min value is 1000us and max is 2000us, REMEMBER!*/
+  Serial.println("Sending 2000 throttle"); 
+  left_prop.writeMicroseconds(2000); 
+  right_prop.writeMicroseconds(2000);
+  delay(10000); /*Give some delay, 7s, to have time to connect
+                *the propellers and let everything start up*/
+  Serial.println("Sending 1000 throttle");
   left_prop.writeMicroseconds(1000); 
   right_prop.writeMicroseconds(1000);
-  delay(7000); /*Give some delay, 7s, to have time to connect
-                *the propellers and let everything start up*/ 
+  delay(10000);
+  Serial.println("Finish Calibration");
+  delay(2000);
 }//end of setup void
 
 void loop() {
@@ -74,7 +81,7 @@ void loop() {
    * in seconds. We work in ms so we haveto divide the value by 1000 
    to obtain seconds*/
 
-  /*Reed the values that the accelerometre gives.
+  /*Read the values that the accelerometre gives.
    * We know that the slave adress for this IMU is 0x68 in
    * hexadecimal. For that in the RequestFrom and the 
    * begin functions we have to put this value.*/
@@ -146,8 +153,8 @@ void loop() {
    Total_angle[1] = 0.98 *(Total_angle[1] + Gyro_angle[1]*elapsedTime) + 0.02*Acceleration_angle[1];
    
    /*Now we have our angles in degree and values from -10º0 to 100º aprox*/
-   Serial.print("ANGLE: ");
-   Serial.print(Total_angle[0] + 4);
+   //Serial.print("ANGLE: ");
+   //Serial.print(Total_angle[0] + 4);
 
    
   
@@ -178,7 +185,7 @@ if(-3 <error <3)
 
 /*The last part is the derivate. The derivate acts upon the speed of the error.
 As we know the speed is the amount of error that produced in a certain amount of
-time divided by that time. For taht we will use a variable called previous_error.
+time divided by that time. For that we will use a variable called previous_error.
 We substract that value from the actual error and divide all by the elapsed time. 
 Finnaly we multiply the result by the derivate constant*/
 
@@ -187,7 +194,7 @@ pid_d = kd*((error - previous_error)/elapsedTime);
 /*The final PID values is the sum of each of this 3 parts*/
 PID = pid_p + pid_i + pid_d;
 
-/*We know taht the min value of PWM signal is 1000us and the max is 2000. So that
+/*We know that the min value of PWM signal is 1000us and the max is 2000. So that
 tells us that the PID value can/s oscilate more than -1000 and 1000 because when we
 have a value of 2000us the maximum value taht we could sybstract is 1000 and when
 we have a value of 1000us for the PWM sihnal, the maximum value that we could add is 1000
@@ -201,13 +208,13 @@ if(PID > 1000)
   PID=1000;
 }
 
-/*Finnaly we calculate the PWM width. We sum the desired throttle and the PID value*/
+/*Finally we calculate the PWM width. We sum the desired throttle and the PID value*/
 pwmLeft = throttle + PID;
 pwmRight = throttle - PID;
 
 
 /*Once again we map the PWM values to be sure that we won't pass the min
-and max values. Yes, we've already maped the PID values. But for example, for 
+and max values. Yes, we've already mapped the PID values. But for example, for 
 throttle value of 1300, if we sum the max PID value we would have 2300us and
 that will mess up the ESC.*/
 //Right
@@ -229,12 +236,12 @@ if(pwmLeft > 2000)
   pwmLeft=2000;
 }
 
-/*Finnaly using the servo function we create the PWM pulses with the calculated
+/*Finally using the servo function we create the PWM pulses with the calculated
 width for each pulse*/
-Serial.print(" --- LEFT:");
-Serial.print(pwmLeft);
-Serial.print(" --- RIGHT: ");
-Serial.println(pwmRight);
+//Serial.print(" --- LEFT:");
+//Serial.print(pwmLeft);
+//Serial.print(" --- RIGHT: ");
+//Serial.println(pwmRight);
 
 left_prop.writeMicroseconds(pwmLeft);
 right_prop.writeMicroseconds(pwmRight);
