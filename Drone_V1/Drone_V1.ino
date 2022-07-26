@@ -124,8 +124,6 @@ void loop() {
 
   int y = ps2x.Analog(PSS_LY);
 
-  //Serial.println(y);
-
   if(y < 116){
     if(mSpeed < MAX_SPEED){
       mSpeed = mSpeed + 1;  
@@ -141,7 +139,7 @@ void loop() {
     motD.write(mSpeed);  
   }
  
-  delay(10);
+  delay(50);
 }
 
 void setAllZero(){

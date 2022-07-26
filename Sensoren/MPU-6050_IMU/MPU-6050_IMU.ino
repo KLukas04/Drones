@@ -132,8 +132,10 @@ void loop(){
   Serial.print(" --- Roll: ");
   Serial.println(angle_roll_output);
 
-  while(micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
-  loop_timer = micros();                                               //Reset the loop timer
+  delay(10);
+
+  //while(micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
+  //loop_timer = micros();                                               //Reset the loop timer
 }
 
 
@@ -150,7 +152,6 @@ void read_mpu_6050_data(){                                             //Subrout
   gyro_x = Wire.read()<<8|Wire.read();                                 //Add the low and high byte to the gyro_x variable
   gyro_y = Wire.read()<<8|Wire.read();                                 //Add the low and high byte to the gyro_y variable
   gyro_z = Wire.read()<<8|Wire.read();                                 //Add the low and high byte to the gyro_z variable
-
 }
 
 void write_LCD(){                                                      //Subroutine for writing the LCD
