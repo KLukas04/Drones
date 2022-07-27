@@ -46,6 +46,8 @@ float desired_angle[2] = {0, 0}; //This is the angle in which we whant the
 
 int counter = 0;
 
+long gyro_x_cal, gyro_y_cal;
+
 void setup() {
 
   Serial.begin(9600);
@@ -55,21 +57,43 @@ void setup() {
     delay(1);
   }
 
-  configurePSController();
+  configurePSController();   
+
+  //setup_mpu_6050_registers();
   
   configureMPU();
 
   configureMotors();
 
   time = millis(); //Start counting time in milliseconds
+
+  Serial.println("Ready to calibrate ESC");
+
+  Serial.println("Sending 180 throttle");
+      
+  right_prop.write(180);
+  left_prop.write(180);
+  right_back_prop.write(180);
+  left_back_prop.write(180);
+
+  delay(10000);
   
+  Serial.println("Sending 0 throttle");
+  right_prop.write(0);
+  left_prop.write(0);
+  right_back_prop.write(0);
+  left_back_prop.write(0); 
+
+  delay(10000);
+  isCalibrated = true;
+  Serial.println("Finish ESC Calibration");
 }
 
 void loop() {
 
   //read the controller
   ps2x.read_gamepad(false, vibration);
-
+  /*
   //ESC-Calibration
   //Stufe 1
   if(!isCalibrated && ps2x.Button(PSB_L1)){
@@ -94,6 +118,7 @@ void loop() {
     pwmBackRight = 0;
   }
 
+  */
   if(isCalibrated){
     int y = ps2x.Analog(PSS_LY);
 
@@ -120,19 +145,21 @@ void loop() {
       right_back_prop.writeMicroseconds(pwmBackRight);
     }
 
+    if(throttle == 1000){
+
+      pwmFrontLeft = 0;
+      pwmFrontRight = 0;
+      pwmBackLeft = 0;
+      pwmBackRight = 0;
+      
+      left_prop.writeMicroseconds(pwmFrontLeft);
+      right_prop.writeMicroseconds(pwmFrontRight);
+      left_back_prop.writeMicroseconds(pwmBackLeft);
+      right_back_prop.writeMicroseconds(pwmBackRight);
+    }
+
     if(counter % 10 == 0){
-      Serial.print("Roll: ");  
-      Serial.print(Total_angle[0]);
-      Serial.print(" Pitch: ");
-      Serial.print(Total_angle[1]);
-      Serial.print(" FrontLeft: ");
-      Serial.print(pwmFrontLeft);
-      Serial.print(" FrontRight: ");
-      Serial.print(pwmFrontRight);
-      Serial.print(" BackLeft: ");
-      Serial.print(pwmBackLeft);
-      Serial.print(" BackRight: ");
-      Serial.println(pwmBackRight);
+      printTests();
     }
   }  
   delay(50);
@@ -155,8 +182,8 @@ void calculateMotorSpeedFromPID(){
       
       /*First calculate the error between the desired angle and 
       *the real measured angle*/
-      error[0] = Total_angle[0] - desired_angle[0];
-      error[1] = Total_angle[1] - desired_angle[1];
+      error[0] = Total_angle[0] + 9.7 - desired_angle[0];
+      error[1] = Total_angle[1] - 7.9 - desired_angle[1];
           
       /*Next the proportional value of the PID is just a proportional constant
       *multiplied by the error*/
@@ -283,85 +310,88 @@ void readAndCalculateAngles(){
   float Gyro_angle[2];
   
   /////////////////////////////I M U/////////////////////////////////////
-      timePrev = time;  // the previous time is stored before the actual time read
-      time = millis();  // actual time read
-      elapsedTime = (time - timePrev) / 1000; 
-    
-    /*The timeStamp is the time that elapsed since the previous loop. 
-     * This is the value that we will use in the formulas as "elapsedTime" 
-     * in seconds. We work in ms so we haveto divide the value by 1000 
-     to obtain seconds*/
+    timePrev = time;  // the previous time is stored before the actual time read
+    time = millis();  // actual time read
+    elapsedTime = (time - timePrev) / 1000; 
   
-    /*Read the values that the accelerometre gives.
-     * We know that the slave adress for this IMU is 0x68 in
-     * hexadecimal. For that in the RequestFrom and the 
-     * begin functions we have to put this value.*/
-     
-       Wire.beginTransmission(0x68);
-       Wire.write(0x3B); //Ask for the 0x3B register- correspond to AcX
-       Wire.endTransmission(false);
-       Wire.requestFrom(0x68,6,true); 
-     
-     /*We have asked for the 0x3B register. The IMU will send a brust of register.
-      * The amount of register to read is specify in the requestFrom function.
-      * In this case we request 6 registers. Each value of acceleration is made out of
-      * two 8bits registers, low values and high values. For that we request the 6 of them  
-      * and just make then sum of each pair. For that we shift to the left the high values 
-      * register (<<) and make an or (|) operation to add the low values.*/
-      
-       Acc_rawX=Wire.read()<<8|Wire.read(); //each value needs two registres
-       Acc_rawY=Wire.read()<<8|Wire.read();
-       Acc_rawZ=Wire.read()<<8|Wire.read();
-  
+  /*The timeStamp is the time that elapsed since the previous loop. 
+   * This is the value that we will use in the formulas as "elapsedTime" 
+   * in seconds. We work in ms so we haveto divide the value by 1000 
+   to obtain seconds*/
+
+  /*Read the values that the accelerometre gives.
+   * We know that the slave adress for this IMU is 0x68 in
+   * hexadecimal. For that in the RequestFrom and the 
+   * begin functions we have to put this value.*/
    
-      /*///This is the part where you need to calculate the angles using Euler equations///*/
-      
-      /* - Now, to obtain the values of acceleration in "g" units we first have to divide the raw   
-       * values that we have just read by 16384.0 because that is the value that the MPU6050 
-       * datasheet gives us.*/
-      /* - Next we have to calculate the radian to degree value by dividing 180º by the PI number
-      * which is 3.141592654 and store this value in the rad_to_deg variable. In order to not have
-      * to calculate this value in each loop we have done that just once before the setup void.
-      */
-  
-      /* Now we can apply the Euler formula. The atan will calculate the arctangent. The
-       *  pow(a,b) will elevate the a value to the b power. And finnaly sqrt function
-       *  will calculate the rooth square.*/
-       /*---X---*/
-       Acceleration_angle[0] = atan((Acc_rawY/16384.0)/sqrt(pow((Acc_rawX/16384.0),2) + pow((Acc_rawZ/16384.0),2)))*rad_to_deg;
-       /*---Y---*/
-       Acceleration_angle[1] = atan(-1*(Acc_rawX/16384.0)/sqrt(pow((Acc_rawY/16384.0),2) + pow((Acc_rawZ/16384.0),2)))*rad_to_deg;
-   
-     /*Now we read the Gyro data in the same way as the Acc data. The adress for the
-      * gyro data starts at 0x43. We can see this adresses if we look at the register map
-      * of the MPU6050. In this case we request just 4 values. W don¡t want the gyro for 
-      * the Z axis (YAW).*/
-      
      Wire.beginTransmission(0x68);
-     Wire.write(0x43); //Gyro data first adress
+     Wire.write(0x3B); //Ask for the 0x3B register- correspond to AcX
      Wire.endTransmission(false);
-     Wire.requestFrom(0x68,4,true); //Just 4 registers
-     
-     Gyr_rawX=Wire.read()<<8|Wire.read(); //Once again we shif and sum
-     Gyr_rawY=Wire.read()<<8|Wire.read();
+     Wire.requestFrom(0x68,6,true); 
    
-     /*Now in order to obtain the gyro data in degrees/seconda we have to divide first
-     the raw value by 131 because that's the value that the datasheet gives us*/
-  
+   /*We have asked for the 0x3B register. The IMU will send a brust of register.
+    * The amount of register to read is specify in the requestFrom function.
+    * In this case we request 6 registers. Each value of acceleration is made out of
+    * two 8bits registers, low values and high values. For that we request the 6 of them  
+    * and just make then sum of each pair. For that we shift to the left the high values 
+    * register (<<) and make an or (|) operation to add the low values.*/
+    
+     Acc_rawX=Wire.read()<<8|Wire.read(); //each value needs two registres
+     Acc_rawY=Wire.read()<<8|Wire.read();
+     Acc_rawZ=Wire.read()<<8|Wire.read();
+
+ 
+    /*///This is the part where you need to calculate the angles using Euler equations///*/
+    
+    /* - Now, to obtain the values of acceleration in "g" units we first have to divide the raw   
+     * values that we have just read by 16384.0 because that is the value that the MPU6050 
+     * datasheet gives us.*/
+    /* - Next we have to calculate the radian to degree value by dividing 180º by the PI number
+    * which is 3.141592654 and store this value in the rad_to_deg variable. In order to not have
+    * to calculate this value in each loop we have done that just once before the setup void.
+    */
+
+    /* Now we can apply the Euler formula. The atan will calculate the arctangent. The
+     *  pow(a,b) will elevate the a value to the b power. And finnaly sqrt function
+     *  will calculate the rooth square.*/
      /*---X---*/
-     Gyro_angle[0] = Gyr_rawX/131.0; 
+     Acceleration_angle[0] = atan((Acc_rawY/16384.0)/sqrt(pow((Acc_rawX/16384.0),2) + pow((Acc_rawZ/16384.0),2)))*rad_to_deg;
      /*---Y---*/
-     Gyro_angle[1] = Gyr_rawY/131.0;
-  
-     /*Now in order to obtain degrees we have to multiply the degree/seconds
-     *value by the elapsedTime.*/
-     /*Finnaly we can apply the final filter where we add the acceleration
-     *part that afects the angles and ofcourse multiply by 0.98 */
-  
-     /*---X axis angle---*/
-     Total_angle[0] = 0.98 *(Total_angle[0] + Gyro_angle[0]*elapsedTime) + 0.02*Acceleration_angle[0];
-     /*---Y axis angle---*/
-     Total_angle[1] = 0.98 *(Total_angle[1] + Gyro_angle[1]*elapsedTime) + 0.02*Acceleration_angle[1];    
+     Acceleration_angle[1] = atan(-1*(Acc_rawX/16384.0)/sqrt(pow((Acc_rawY/16384.0),2) + pow((Acc_rawZ/16384.0),2)))*rad_to_deg;
+ 
+   /*Now we read the Gyro data in the same way as the Acc data. The adress for the
+    * gyro data starts at 0x43. We can see this adresses if we look at the register map
+    * of the MPU6050. In this case we request just 4 values. W don¡t want the gyro for 
+    * the Z axis (YAW).*/
+    
+   Wire.beginTransmission(0x68);
+   Wire.write(0x43); //Gyro data first adress
+   Wire.endTransmission(false);
+   Wire.requestFrom(0x68,4,true); //Just 4 registers
+   
+   Gyr_rawX=Wire.read()<<8|Wire.read(); //Once again we shif and sum
+   Gyr_rawY=Wire.read()<<8|Wire.read();
+ 
+   /*Now in order to obtain the gyro data in degrees/seconda we have to divide first
+   the raw value by 131 because that's the value that the datasheet gives us*/
+
+   /*---X---*/
+   Gyro_angle[0] = Gyr_rawX/131.0; 
+   /*---Y---*/
+   Gyro_angle[1] = Gyr_rawY/131.0;
+
+   /*Now in order to obtain degrees we have to multiply the degree/seconds
+   *value by the elapsedTime.*/
+   /*Finnaly we can apply the final filter where we add the acceleration
+   *part that afects the angles and ofcourse multiply by 0.98 */
+
+   /*---X axis angle---*/
+   Total_angle[0] = 0.98 *(Total_angle[0] + Gyro_angle[0]*elapsedTime) + 0.02*Acceleration_angle[0];
+   /*---Y axis angle---*/
+   Total_angle[1] = 0.98 *(Total_angle[1] + Gyro_angle[1]*elapsedTime) + 0.02*Acceleration_angle[1];
+
+   //Total_angle[0] += 9.7;
+   //Total_angle[0] -= 7.9;
 }
 
 void configurePSController(){
@@ -402,23 +432,37 @@ void configurePSController(){
 
 void configureMPU(){
 
-    pinMode(53, OUTPUT); 
-    digitalWrite(53, HIGH);
+    Serial.println("Starting MPU configure");
 
-    delay(300);
-  
+    pinMode(53, OUTPUT);
+    digitalWrite(53, HIGH);
+    
     Wire.begin(); //begin the wire comunication
     Wire.beginTransmission(0x68);
     Wire.write(0x6B);
     Wire.write(0);
-    Wire.endTransmission(true);  
+    Wire.endTransmission(true);
+
+    for(int i = 0; i < 3000; i++){
+        Wire.beginTransmission(0x68);
+        Wire.write(0x43); //Gyro data first adress
+        Wire.endTransmission(false);
+        Wire.requestFrom(0x68,4,true); //Just 4 registers
+        
+        long Gyr_rawX=Wire.read()<<8|Wire.read(); //Once again we shif and sum
+        long Gyr_rawY=Wire.read()<<8|Wire.read();
+
+        delay(10);
+    }
 }
 
 void configureMotors(){
+  Serial.println("Start Motor configure");
   right_prop.attach(4, 1000, 2000); //attach the right motor to pin 4
   left_prop.attach(5, 1000, 2000);  //attach the left motor to pin 5
   left_back_prop.attach(7, 1000, 2000); //attach the right motor to pin 4
-  right_back_prop.attach(6, 1000, 2000); //attach the right motor to pin 4  
+  right_back_prop.attach(6, 1000, 2000); //attach the right motor to pin 4 
+  Serial.println("Finish Motor configure");
 }
 
 void setAllZero(){
@@ -426,6 +470,45 @@ void setAllZero(){
   left_prop.write(0);
   right_back_prop.write(0);
   left_back_prop.write(0);  
+}
+
+void printTests(){
+  Serial.print("Roll: ");
+  Serial.print(Total_angle[0] + 9.7);
+  Serial.print(" Pitch: ");
+  Serial.print(Total_angle[1] - 7.9);
+  Serial.print(" FrontLeft: ");
+  Serial.print(pwmFrontLeft);
+  Serial.print(" FrontRight: ");
+  Serial.print(pwmFrontRight);
+  Serial.print(" BackLeft: ");
+  Serial.print(pwmBackLeft);
+  Serial.print(" BackRight: ");
+  Serial.println(pwmBackRight);  
+}
+
+void setup_mpu_6050_registers(){
+
+  pinMode(53, OUTPUT); 
+  digitalWrite(53, HIGH);
+
+  delay(300);
+  
+  //Activate the MPU-6050
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x6B);                                                    //Send the requested starting register
+  Wire.write(0x00);                                                    //Set the requested starting register
+  Wire.endTransmission();                                              //End the transmission
+  //Configure the accelerometer (+/-8g)
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x1C);                                                    //Send the requested starting register
+  Wire.write(0x10);                                                    //Set the requested starting register
+  Wire.endTransmission();                                              //End the transmission
+  //Configure the gyro (500dps full scale)
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x1B);                                                    //Send the requested starting register
+  Wire.write(0x08);                                                    //Set the requested starting register
+  Wire.endTransmission();                                              //End the transmission
 }
 
 /*In order to start up the ESCs we have to send a min value

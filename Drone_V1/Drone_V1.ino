@@ -21,7 +21,7 @@ bool isCalibrated = false;
 bool runLoopOnce = false;
 
 void setup() {
-  Serial.begin(57600);
+  Serial.begin(9600);
 
   // wait until serial port opens for native USB devices
   while (! Serial) {

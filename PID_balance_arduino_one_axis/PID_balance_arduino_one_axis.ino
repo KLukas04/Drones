@@ -49,7 +49,7 @@ void setup() {
   Wire.write(0x6B);
   Wire.write(0);
   Wire.endTransmission(true);
-  Serial.begin(250000);
+  Serial.begin(9600);
   right_prop.attach(4, 1000, 2000); //attach the right motor to pin 4
   left_prop.attach(5, 1000, 2000);  //attach the left motor to pin 5
   left_back_prop.attach(7, 1000, 2000); //attach the right motor to pin 4
@@ -67,6 +67,7 @@ void setup() {
   right_back_prop.writeMicroseconds(2000);
   delay(10000); /*Give some delay, 7s, to have time to connect
                 *the propellers and let everything start up*/
+  
   Serial.println("Sending 1000 throttle");
   left_prop.writeMicroseconds(1000); 
   right_prop.writeMicroseconds(1000);
@@ -75,6 +76,7 @@ void setup() {
   delay(10000);
   Serial.println("Finish Calibration");
   delay(2000);
+  
 }//end of setup void
 
 void loop() {
@@ -173,7 +175,7 @@ the balance*/
 
 /*First calculate the error between the desired angle and 
 *the real measured angle*/
-error = Total_angle[0] + 4 - desired_angle;
+error = Total_angle[0] - desired_angle;
     
 /*Next the proportional value of the PID is just a proportional constant
 *multiplied by the error*/
@@ -250,13 +252,18 @@ width for each pulse*/
 //Serial.print(pwmLeft);
 //Serial.print(" --- RIGHT: ");
 //Serial.println(pwmRight);
-
+/*
 left_prop.writeMicroseconds(pwmLeft);
 right_prop.writeMicroseconds(pwmRight);
 left_back_prop.writeMicroseconds(pwmLeft);
 right_back_prop.writeMicroseconds(pwmRight);
 previous_error = error; //Remember to store the previous error.
 
+Serial.print("Angle 0: ");
+Serial.print(Total_angle[0]);
+Serial.print(" Angle 1: ");
+Serial.println(Total_angle[1]);
+*/
 delay(10);
 
 }//end of loop void
