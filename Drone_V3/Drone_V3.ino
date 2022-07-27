@@ -54,12 +54,11 @@ double throttle=1000; //initial value of throttle to the motors
 float desired_angle[2] = {0, 0}; //This is the angle in which we whant the
                          //balance to stay steady
 
+int counter = 0;
 
 void setup() {
-  
-  //Power for the Gyro
 
-  Serial.begin(57600);
+  Serial.begin(9600);
 
   // wait until serial port opens for native USB devices
   while (! Serial) {
@@ -111,7 +110,6 @@ void setup() {
   Wire.write(0x6B);
   Wire.write(0);
   Wire.endTransmission(true);
-  Serial.begin(250000);
 
   //ESC and Motors
   right_prop.attach(4, 1000, 2000); //attach the right motor to pin 4
@@ -125,6 +123,7 @@ void setup() {
    * the ESCs won't start up or enter in the configure mode.
    * The min value is 1000us and max is 2000us, REMEMBER!*/
    /*
+  This would be the auto calibration
   Serial.println("Sending 2000 throttle"); 
   left_prop.writeMicroseconds(2000); 
   right_prop.writeMicroseconds(2000);
@@ -405,8 +404,15 @@ void loop() {
   previous_error[1] = error[1];  
 }
 
-delay(50);
+if(counter % 10 == 0){
+  Serial.print("Roll: ");  
+  Serial.print(Total_angle[0]);
+  Serial.print(" Pitch: ");
+  Serial.println(Total_angle[1]);
+}
 
+delay(50);
+counter++;
 }
 
 void setAllZero(){
