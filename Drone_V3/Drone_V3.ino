@@ -105,6 +105,7 @@ void loop() {
       left_back_prop.write(180);
       
   }
+  */
   //Hier Motor anschließen, Stufe 2
   if(ps2x.Button(PSB_R1) || ps2x.Button(PSB_CIRCLE)){
     //Serial.println("L2 or Circle");
@@ -118,7 +119,7 @@ void loop() {
     pwmBackRight = 0;
   }
 
-  */
+  
   if(isCalibrated){
     int y = ps2x.Analog(PSS_LY);
 
@@ -134,16 +135,6 @@ void loop() {
     }
 
     readAndCalculateAngles();
-  
-    if(throttle > 1001){
-      
-      calculateMotorSpeedFromPID();
-      
-      left_prop.writeMicroseconds(pwmFrontLeft);
-      right_prop.writeMicroseconds(pwmFrontRight);
-      left_back_prop.writeMicroseconds(pwmBackLeft);
-      right_back_prop.writeMicroseconds(pwmBackRight);
-    }
 
     if(throttle == 1000){
 
@@ -151,6 +142,16 @@ void loop() {
       pwmFrontRight = 0;
       pwmBackLeft = 0;
       pwmBackRight = 0;
+      
+      left_prop.writeMicroseconds(pwmFrontLeft);
+      right_prop.writeMicroseconds(pwmFrontRight);
+      left_back_prop.writeMicroseconds(pwmBackLeft);
+      right_back_prop.writeMicroseconds(pwmBackRight);
+    }
+  
+    if(throttle > 1001){
+      
+      calculateMotorSpeedFromPID();
       
       left_prop.writeMicroseconds(pwmFrontLeft);
       right_prop.writeMicroseconds(pwmFrontRight);
@@ -244,15 +245,15 @@ void calculateMotorSpeedFromPID(){
       /*Finally we calculate the PWM width. We sum the desired throttle and the PID value*/
       //pwmLeft = throttle + PID;
       //pwmRight = throttle - PID;
-      pwmFrontLeft = throttle + PID[0];
-      pwmBackLeft = throttle + PID[0];
-      pwmFrontRight = throttle - PID[0];
-      pwmBackRight = throttle - PID[0];
+      pwmFrontLeft = throttle - PID[0] + PID[1];
+      pwmBackLeft = throttle - PID[0] - PID[1];
+      pwmFrontRight = throttle + PID[0] + PID[1];
+      pwmBackRight = throttle + PID[0] - PID[1];
       
-      pwmFrontLeft = throttle + PID[1];
-      pwmFrontRight = throttle + PID[1];
-      pwmBackLeft = throttle - PID[1];
-      pwmBackRight = throttle - PID[1];
+      //pwmFrontLeft = throttle + PID[1];
+      //pwmFrontRight = throttle + PID[1];
+      //pwmBackLeft = throttle - PID[1];
+      //pwmBackRight = throttle - PID[1];
       
       /*Once again we map the PWM values to be sure that we won't pass the min
       and max values. Yes, we've already mapped the PID values. But for example, for 
