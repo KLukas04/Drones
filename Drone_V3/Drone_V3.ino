@@ -76,7 +76,7 @@ void setup() {
   right_back_prop.write(180);
   left_back_prop.write(180);
 
-  delay(10000);
+  delay(7000);
   
   Serial.println("Sending 0 throttle");
   right_prop.write(0);
@@ -84,7 +84,7 @@ void setup() {
   right_back_prop.write(0);
   left_back_prop.write(0); 
 
-  delay(10000);
+  delay(7000);
   isCalibrated = true;
   Serial.println("Finish ESC Calibration");
 }
